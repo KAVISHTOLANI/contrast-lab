@@ -121,3 +121,143 @@
   font-weight: 800;
   padding: 14px;
 }
+
+/* ---------- Hero checker (live, interactive) ---------- */
+.hero-checker {
+  display: grid;
+  gap: 14px;
+}
+.hc-sample {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  padding: 22px;
+  transition: background-color 0.35s var(--ease), color 0.35s var(--ease);
+}
+.hc-sample strong {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 560;
+  display: block;
+}
+.hc-sample p {
+  margin: 2px 0 0;
+  font-size: 0.92rem;
+}
+.hc-big {
+  font-family: var(--font-display);
+  font-size: 3.4rem;
+  line-height: 1;
+}
+.hc-result {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.hc-ratio {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: -0.03em;
+  margin-top: 6px;
+}
+.tone-ok {
+  color: var(--ok);
+}
+.tone-warn {
+  color: var(--warn);
+}
+.tone-err {
+  color: var(--err);
+}
+.hc-badges {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 6px;
+  font-size: 0.8rem;
+}
+.hc-badges li {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.hc-badges li span {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+}
+.hc-badges .pass {
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+.hc-badges .fail {
+  background: var(--err-soft);
+  color: var(--err);
+}
+.hc-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+.hc-controls label {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 10px;
+  align-items: center;
+}
+.hc-controls .label-mono {
+  grid-column: 1 / -1;
+  margin-bottom: 6px;
+}
+.hc-controls input[type='color'] {
+  width: 38px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px;
+  background: var(--surface);
+}
+.hc-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.hc-presets button {
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 11px;
+  cursor: pointer;
+  transition: transform 0.15s var(--ease);
+}
+.hc-presets button:hover {
+  transform: translateY(-1px);
+}
+.hc-presets button[aria-pressed='true'] {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.ratio {
+  font-family: var(--font-display);
+  font-size: 3.2rem;
+  font-weight: 560;
+  letter-spacing: -0.03em;
+}
+.pair-swatch {
+  font-family: var(--font-display);
+}
+.pair h3 {
+  overflow-wrap: anywhere;
+}

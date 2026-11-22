@@ -7,6 +7,7 @@ describe('Contrast Lab workflow', () => {
   it('shows the landing page by default', () => {
     render(<App />);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/readable/i);
+    expect(screen.getByTestId('hero-ratio')).toHaveTextContent(':1');
   });
 
   it('checks a pair, rejects bad input, applies a fix and saves', async () => {
@@ -37,15 +38,25 @@ describe('Contrast Lab workflow', () => {
     await user.type(screen.getByLabelText('Save this pair as'), 'Caption text');
     await user.click(screen.getByRole('button', { name: 'Save pair' }));
     expect(screen.getByText(/Saved “Caption text”/)).toBeInTheDocument();
-    expect(JSON.parse(localStorage.getItem('contrast-lab:pairs')!)).toHaveLength(1);
+    expect(JSON.parse(localStorage.getItem('contrast-lab:pairs')!).filter((p: { demo?: boolean }) => !p.demo)).toHaveLength(1);
+  });
+
+  it('starts with labelled demo pairs that can be cleared', async () => {
+    window.location.hash = '/saved';
+    const user = userEvent.setup();
+    render(<App />);
+    expect(screen.getAllByText('Demo data').length).toBeGreaterThan(0);
+    await user.click(screen.getByRole('button', { name: 'Clear demo pairs' }));
+    expect(screen.getByText('No saved pairs yet')).toBeInTheDocument();
   });
 
   it('shows an empty state and can load demo pairs', async () => {
+    localStorage.setItem('contrast-lab:pairs', '[]');
     window.location.hash = '/saved';
     const user = userEvent.setup();
     render(<App />);
     expect(screen.getByText('No saved pairs yet')).toBeInTheDocument();
     await user.click(screen.getAllByRole('button', { name: 'Add demo pairs' })[0]);
-    expect(screen.getByText('Demo: muted caption')).toBeInTheDocument();
+    expect(screen.getByText('muted caption')).toBeInTheDocument();
   });
 });

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { EmptyState, Field, Landing, NotFound, Notice, Shell, uid, useFlash, usePersistentState, useRoute } from './shared/ui';
+import { DemoTag, EmptyState, Field, Landing, NotFound, Notice, PageHead, Shell, uid, useFlash, usePersistentState, useRoute } from './shared/ui';
 import { contrastRatio, evaluate, formatRatio, parseColor, suggestForeground, summary, toHex } from './lib/contrast';
 
 export interface SavedPair {
@@ -14,6 +14,9 @@ const DEMO_PAIRS: SavedPair[] = [
   { id: 'demo-1', name: 'Demo: muted caption', fg: '#8a8f98', bg: '#ffffff', demo: true },
   { id: 'demo-2', name: 'Demo: brand button', fg: '#ffffff', bg: '#5034d9', demo: true },
   { id: 'demo-3', name: 'Demo: warning banner', fg: '#7a4b00', bg: '#fff4d6', demo: true },
+  { id: 'demo-4', name: 'Demo: dark-mode body text on a very long card title that wraps', fg: '#d6d0c4', bg: '#1a1814', demo: true },
+  { id: 'demo-5', name: 'Demo: placeholder text', fg: '#b8b8b8', bg: '#ffffff', demo: true },
+  { id: 'demo-6', name: 'Demo: identical colours (1:1)', fg: '#336699', bg: '#336699', demo: true },
 ];
 
 const NAV = [
@@ -24,8 +27,8 @@ const NAV = [
 
 export default function App() {
   const [route] = useRoute();
-  const [pairs, setPairs] = usePersistentState<SavedPair[]>('contrast-lab:pairs', []);
-  const [fg, setFg] = usePersistentState('contrast-lab:fg', '#6b7280');
+  const [pairs, setPairs] = usePersistentState<SavedPair[]>('contrast-lab:pairs', DEMO_PAIRS);
+  const [fg, setFg] = usePersistentState('contrast-lab:fg', '#8a8f98');
   const [bg, setBg] = usePersistentState('contrast-lab:bg', '#ffffff');
 
   let page;
@@ -46,47 +49,95 @@ export default function App() {
   else page = <NotFound />;
 
   return (
-    <Shell name="Contrast Lab" mark="CL" nav={NAV} route={route}>
+    <Shell name="Contrast Lab" wordmark={['Contrast', 'Lab']} nav={NAV} route={route} cta={{ to: '/check', label: 'Open checker' }}>
       {page}
     </Shell>
+  );
+}
+
+function HeroChecker() {
+  const [fg, setFg] = useState('#8a8f98');
+  const [bg, setBg] = useState('#fffdf8');
+  const f = parseColor(fg)!, b = parseColor(bg)!;
+  const ratio = contrastRatio(f, b);
+  const res = evaluate(ratio);
+  const v = summary(ratio);
+  const presets: [string, string, string][] = [
+    ['Muted grey', '#8a8f98', '#fffdf8'],
+    ['Ink on paper', '#17140f', '#f5f1e8'],
+    ['White on violet', '#ffffff', '#5034d9'],
+    ['Gold on black', '#c9a86a', '#0b0a09'],
+  ];
+  return (
+    <div className="hero-checker">
+      <div className="hc-sample" style={{ color: fg, background: bg }}>
+        <span className="hc-big">Aa</span>
+        <div>
+          <strong>Readable headline</strong>
+          <p>Body copy rendered in the exact pair you pick.</p>
+        </div>
+      </div>
+      <div className="hc-result">
+        <div>
+          <span className="label-mono">Contrast ratio</span>
+          <div className={`hc-ratio tone-${v.tone}`} data-testid="hero-ratio">{formatRatio(ratio)}</div>
+        </div>
+        <ul className="hc-badges" aria-label="WCAG results">
+          {res.filter((r) => r.id !== 'aa-ui').map((r) => (
+            <li key={r.id} className={r.pass ? 'pass' : 'fail'}>
+              <span>{r.level}</span> {r.label.replace(' text', '')} {r.pass ? '✓' : '✕'}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="hc-controls">
+        <label>
+          <span className="label-mono">Text</span>
+          <input type="color" value={toHex(f)} onChange={(e) => setFg(e.target.value)} aria-label="Preview text colour" />
+          <code>{toHex(f)}</code>
+        </label>
+        <label>
+          <span className="label-mono">Background</span>
+          <input type="color" value={toHex(b)} onChange={(e) => setBg(e.target.value)} aria-label="Preview background colour" />
+          <code>{toHex(b)}</code>
+        </label>
+      </div>
+      <div className="hc-presets" role="group" aria-label="Example pairs">
+        {presets.map(([n, a, c]) => (
+          <button key={n} type="button" onClick={() => { setFg(a); setBg(c); }} aria-pressed={fg === a && bg === c} style={{ color: a, background: c }}>
+            {n}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
 
 function Home() {
   return (
     <Landing
-      eyebrow="Colour accessibility checker"
-      title="Check whether your text is readable before you ship it."
-      lead="Pick a text colour and a background, see a live preview, and get a plain answer on which WCAG contrast levels the pair meets — plus a nearby colour that passes when it does not."
-      actions={
-        <>
-          <a className="btn btn-primary" href="#/check">Open the checker</a>
-          <a className="btn" href="#/saved">View saved pairs</a>
-        </>
-      }
-      preview={
-        <div className="hero-swatches" aria-hidden="true">
-          <div style={{ background: '#ffffff', color: '#8a8f98' }}>Aa <span>2.95:1</span></div>
-          <div style={{ background: '#ffffff', color: '#5c6370' }}>Aa <span>6.11:1</span></div>
-          <div style={{ background: '#5034d9', color: '#ffffff' }}>Aa <span>7.04:1</span></div>
-        </div>
-      }
+      compact
+      eyebrow="Colour accessibility · WCAG 2.2"
+      title={<>Is your text <em>actually</em> readable?</>}
+      lead="Pick a text colour and a background. Contrast Lab computes the WCAG contrast ratio, tells you which levels it meets, and finds the nearest colour that passes when it does not."
+      primary={{ href: '#/check', label: 'Open the checker' }}
+      secondary={{ href: '#/saved', label: 'View saved pairs' }}
+      previewLabel="Live checker — try it"
+      preview={<HeroChecker />}
       steps={[
-        { title: 'Choose two colours', body: 'Use the colour picker or type hex (#1f2937), short hex (#333) or rgb(31, 41, 55).' },
-        { title: 'Read the result', body: 'The ratio is checked against AA and AAA thresholds for normal text, large text and UI parts.' },
-        { title: 'Fix and save', body: 'Apply a suggested colour that passes, then save the pair to your palette for later.' },
+        { title: 'Choose two colours', body: 'Use the picker or type hex (#1f2937), short hex (#333) or rgb(31, 41, 55).' },
+        { title: 'Read the verdict', body: 'The ratio is checked against AA and AAA for normal text, large text and UI parts.' },
+        { title: 'Fix and save', body: 'Apply a suggested colour that passes, then save the pair to your palette.' },
       ]}
+      stepsIntro="Everything updates as you type. Nothing leaves your browser."
       features={[
         { title: 'Live preview', body: 'Headings, body copy, a link and a button rendered in your exact colours.' },
         { title: 'Honest rounding', body: 'Ratios are truncated, never rounded up, so 4.49:1 is never shown as a pass.' },
-        { title: 'Suggested fixes', body: 'Keeps your hue and saturation and only adjusts lightness to reach the target.' },
-        { title: 'Saved palette', body: 'Name and keep pairs in this browser. Nothing is uploaded.' },
+        { title: 'Suggested fixes', body: 'Keeps hue and saturation and only adjusts lightness to reach the target.' },
+        { title: 'Saved palette', body: 'Name and keep pairs in this browser for later checks.' },
       ]}
-      note={
-        <>
-          Contrast Lab implements the WCAG 2.x contrast formula. It does not yet model APCA (the proposed WCAG 3 method), transparency, or text over images.
-        </>
-      }
+      note="Contrast Lab implements the WCAG 2.x contrast formula. It does not model APCA (proposed for WCAG 3), transparency, or text over images."
+      closing={{ title: <>Check your <em>first pair.</em></>, action: { href: '#/check', label: 'Open the checker' } }}
     />
   );
 }
@@ -166,12 +217,7 @@ function Checker(props: {
 
   return (
     <div className="stack">
-      <div className="page-head">
-        <div>
-          <h1>Contrast checker</h1>
-          <p>Results update as you type.</p>
-        </div>
-      </div>
+      <PageHead eyebrow="Workspace · Checker" title={<>Contrast <em>checker</em></>} description="Results update as you type. Ratios are truncated to two decimals." />
       <div className="checker">
         <div className="card stack">
           <ColorInput label="Text colour" value={fg} onChange={setFg} error={fgRgb ? null : 'Not a colour I recognise. Try #1f2937 or rgb(31, 41, 55).'} />
@@ -296,20 +342,25 @@ function Saved(props: { pairs: SavedPair[]; setPairs: (p: SavedPair[]) => void; 
   const loadDemo = () => {
     const existing = new Set(pairs.map((p) => p.id));
     setPairs([...pairs, ...DEMO_PAIRS.filter((d) => !existing.has(d.id))]);
-    setFlash({ kind: 'success', text: 'Added three demo pairs.' });
+    setFlash({ kind: 'success', text: `Added ${DEMO_PAIRS.length} demo pairs.` });
   };
   return (
     <div className="stack">
-      <div className="page-head">
-        <div>
-          <h1>Saved pairs</h1>
-          <p>Stored in this browser only.</p>
-        </div>
-        <div className="row">
-          <button type="button" className="btn" onClick={loadDemo}>Add demo pairs</button>
-          <a className="btn btn-primary" href="#/check">New check</a>
-        </div>
-      </div>
+      <PageHead
+        eyebrow="Workspace · Palette"
+        title={<>Saved <em>pairs</em></>}
+        description={`${pairs.length} pair${pairs.length === 1 ? '' : 's'} · ${pairs.filter((p) => contrastRatio(parseColor(p.fg)!, parseColor(p.bg)!) >= 4.5).length} pass AA for body text. Stored in this browser only.`}
+        actions={
+          <>
+            {pairs.some((p) => p.demo) ? (
+              <button type="button" className="btn" onClick={() => setPairs(pairs.filter((p) => !p.demo))}>Clear demo pairs</button>
+            ) : (
+              <button type="button" className="btn" onClick={loadDemo}>Add demo pairs</button>
+            )}
+            <a className="btn btn-primary" href="#/check">New check</a>
+          </>
+        }
+      />
       {flash && <Notice kind={flash.kind}>{flash.text}</Notice>}
       {pairs.length === 0 ? (
         <EmptyState
@@ -333,7 +384,7 @@ function Saved(props: { pairs: SavedPair[]; setPairs: (p: SavedPair[]) => void; 
                 <div className="pair-swatch" style={{ color: p.fg, background: p.bg }}>Aa</div>
                 <div className="pair-body">
                   <h3>
-                    {p.name} {p.demo && <span className="demo-tag">Demo</span>}
+                    {p.name.replace(/^Demo: /, '')} {p.demo && <DemoTag />}
                   </h3>
                   <p className="mono small">
                     {p.fg} on {p.bg}
