@@ -2,6 +2,8 @@
 
 Check a text colour against a background colour using the WCAG 2.x contrast formula, see a live preview, and get a nearby colour that passes when the pair falls short.
 
+![Landing with the live checker](docs/landing.png)
+
 ![Checker view](docs/checker.png)
 
 | Mobile | Landing |
@@ -27,7 +29,12 @@ The smoke test needs a Chromium build for Playwright; run `npm run e2e:install` 
 3. If the pair fails, press **Apply** on a recommendation. It keeps the hue and saturation and changes only lightness.
 4. Name the pair and **Save pair**. It appears under **Saved pairs**, where you can reopen or delete it.
 
-Demo content: **Saved pairs → Add demo pairs** loads three labelled example pairs.
+
+Demo content: the palette opens with six labelled demo pairs (including a long name, a failing placeholder pair and an identical-colours 1:1 edge case). **Clear demo pairs** shows the empty state.
+
+## Design
+
+Shared editorial system (Fraunces display, Inter Tight UI, mono labels). The hero preview *is* a working checker: pick colours or presets and the ratio and AA/AAA badges update live.
 
 ## States covered
 
