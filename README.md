@@ -1,5 +1,17 @@
 # Contrast Lab
 
+<!-- screenshots:start -->
+<p align="center">
+  <img src="docs/screenshots/desktop.png" alt="Contrast Lab on a Mac (1440×900)" width="100%">
+</p>
+<p align="center">
+  <img src="docs/screenshots/tablet.png" alt="Contrast Lab on a tablet" height="460">
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/phone.png" alt="Contrast Lab on a phone" height="460">
+</p>
+<p align="center"><sub>Mac (1440×900) · Tablet (820×1180) · Phone (390×844)</sub></p>
+<!-- screenshots:end -->
+
 Check a text colour against a background colour using the WCAG 2.x contrast formula, see a live preview, and get a nearby colour that passes when the pair falls short.
 
 **Live demo:** [https://kavishtolani.github.io/contrast-lab/](https://kavishtolani.github.io/contrast-lab/) — runs entirely in your browser; demo data is fictional and labelled.
