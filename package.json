@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "description": "Check colour pairs against WCAG contrast guidelines.",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",

@@ -2,6 +2,8 @@
 
 Check a text colour against a background colour using the WCAG 2.x contrast formula, see a live preview, and get a nearby colour that passes when the pair falls short.
 
+**Live demo:** [https://kavishtolani.github.io/contrast-lab/](https://kavishtolani.github.io/contrast-lab/) — runs entirely in your browser; demo data is fictional and labelled.
+
 ![Landing with the live checker](docs/landing.png)
 
 ![Checker view](docs/checker.png)
@@ -68,3 +70,7 @@ Shared editorial system (Fraunces display, Inter Tight UI, mono labels). The her
 - Add APCA scores alongside WCAG 2.x.
 - Suggest background adjustments and full palette checks (every text colour against every background).
 - Export saved pairs as CSS custom properties or JSON.
+
+## Licence
+
+MIT — see [LICENSE](LICENSE).
